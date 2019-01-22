@@ -1,0 +1,15 @@
+{
+    "name": "distinctm/laravel-data-sync",
+    "description": "Laravel utility to keep records synced between enviroments through source control",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "distinctm",
+            "email": "jani@marketdistinctly.com"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "orchestra/testbench": "^3.7"
+    }
+}
