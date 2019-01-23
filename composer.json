@@ -14,12 +14,19 @@
     },
     "autoload": {
         "psr-4" : {
-            "distinctm\\LaravelDataSyc\\": "src/"
+            "distinctm\\LaravelDataSync\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4" : {
-            "distinctm\\LaravelDataSyc\\Tests\\": "tests/"
+            "distinctm\\LaravelDataSync\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "distinctm\\LaravelDataSync\\DataSyncBaseServiceProvider"
+            ]
         }
     }
 }
