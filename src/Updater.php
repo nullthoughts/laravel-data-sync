@@ -2,7 +2,7 @@
 
 namespace distinctm\LaravelDataSync;
 
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 
 class Updater
@@ -15,7 +15,10 @@ class Updater
      */
     public function __construct($path = null)
     {
-        $this->files = Storage::files($this->getDirectory($path));
+        
+        $this->files = $this->getFiles(
+            $this->getDirectory($path)
+        );
     }
 
     /**
@@ -44,17 +47,19 @@ class Updater
         $records = $this->getRecords($file);
 
         $records->each(function($record) use ($model) {
+            $record = $this->resolveObjects($record);
+
             $criteria = $this->getCriteria($record);
             $values = $this->getValues($record);
 
-            return $model::updateOrCreate($criteria, $values);
+            $model::updateOrCreate($criteria, $values);
         });
 
         return $records;
     }
 
     /**
-     * Get sync files directory path
+     * Get directory path for sync files
      *
      * @param object $record
      * @return array
@@ -71,14 +76,27 @@ class Updater
     }
 
     /**
+     * Get list of files in directory
+     *
+     * @param string $directory
+     * @return void
+     */
+    protected function getFiles(string $directory)
+    {
+        return collect(File::files($directory))->map(function($path) {
+            return $path->getPathname();
+        })->toArray();
+    }
+
+    /**
      * Filter record criteria
      *
-     * @param object $record
+     * @param \Illuminate\Support\Collection $record
      * @return array
      */
-    protected function getCriteria(object $record)
+    protected function getCriteria(\Illuminate\Support\Collection $record)
     {
-        $criteria = collect($record)->filter(function($value, $key) {
+        $criteria = $record->filter(function($value, $key) {
             return $this->isCriteria($key);
         });
 
@@ -94,12 +112,12 @@ class Updater
     /**
      * Filter record values
      *
-     * @param array $record
+     * @param \Illuminate\Support\Collection $record
      * @return array
      */
-    protected function getValues($record)
+    protected function getValues(\Illuminate\Support\Collection $record)
     {
-        $values = collect($record)->reject(function($value, $key) {
+        return $record->reject(function($value, $key) {
             if($this->isCriteria($key)) {
                 return true;
             }
@@ -109,14 +127,6 @@ class Updater
             }
 
             return false;
-        });
-
-        return $values->mapWithKeys(function($value, $key) {
-            if(is_object($value)) {
-                return $this->resolveId($key, $value);
-            }
-
-            return [$key => $value];
         })->toArray();
     }
 
@@ -132,14 +142,20 @@ class Updater
     }
 
     /**
-     * Parses file to JSON and returns collection
+     * Parses JSON from file and returns collection
      *
      * @param string $file
      * @return \Illuminate\Support\Collection
      */
     protected function getRecords(string $file)
     {
-        return collect(json_decode(Storage::disk('sync')->get($file)));
+        $records = collect(json_decode(File::get($file)));
+
+        if($records->isEmpty()) {
+            throw new \Exception("No records or invalid JSON for {$file} model");
+        }
+
+        return $records;
     }
 
     /**
@@ -163,7 +179,7 @@ class Updater
     protected function resolveId(string $key, object $values)
     {
         $model = $this->getModel($key);
-
+        
         $values = collect($values)->mapWithKeys(function($value, $column) {
             if(is_object($value)) {
                 return $this->resolveId($column, $value);
@@ -173,6 +189,23 @@ class Updater
         })->toArray();
 
         return [$key . '_id' => $model::where($values)->first()->id];
+    }
+
+    /**
+     * Detect nested objects and resolve them
+     *
+     * @param object $records
+     * @return \Illuminate\Support\Collection
+     */
+    protected function resolveObjects(object $record)
+    {
+        return collect($record)->mapWithKeys(function($value, $key) {
+            if(is_object($value)) {
+                return $this->resolveId($key, $value);
+            }
+
+            return [$key => $value];
+        });
     }
 
 }
