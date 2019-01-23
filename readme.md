@@ -35,10 +35,10 @@ translates to:
 User::updateOrCreate([
     'email' => 'ferris@buellerandco.com',
 ],[
-	'name': 'Ferris Bueller',
+    'name': 'Ferris Bueller',
     'properties->title' => 'Leisure Consultant',
     'phone_numbers->mobile' => '555-555-5555',
-    'department_id' => Department::where('name', 'Management)
+    'department_id' => Department::where('name', 'Management')
                         ->where('location_id', Location::where('name', 'Chicago')->first()->id)
                         ->first()
                         ->id,
