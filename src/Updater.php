@@ -29,7 +29,7 @@ class Updater
     }
 
     /**
-     * Parse each record for attributes/values and update/create model
+     * Parse each record for criteria/values and update/create model
      *
      * @param string $file
      * @return \Illuminate\Support\Collection
@@ -40,30 +40,30 @@ class Updater
         $records = $this->getRecords($file);
 
         return $records->map(function($record) use ($model) {
-            $attributes = $this->getAttributes($record);
+            $criteria = $this->getCriteria($record);
             $values = $this->getValues($record);
 
-            return $model::updateOrCreate($attributes, $values);
+            return $model::updateOrCreate($criteria, $values);
         });
     }
 
     /**
-     * Filter record attributes
+     * Filter record criteria
      *
      * @param object $record
      * @return array
      */
-    protected function getAttributes(object $record)
+    protected function getCriteria(object $record)
     {
-        $attributes = collect($record)->filter(function($value, $key) {
-            return $this->isAttribute($key);
+        $criteria = collect($record)->filter(function($value, $key) {
+            return $this->isCriteria($key);
         });
 
-        if($attributes->count() == 0) {
-            throw new \Exception("No attributes (conditions for a match) detected");
+        if($criteria->count() == 0) {
+            throw new \Exception("No criteria/attributes detected");
         }
 
-        return $attributes->mapWithKeys(function($value, $key) {
+        return $criteria->mapWithKeys(function($value, $key) {
             return [substr($key, 1) => $value];
         })->toArray();
     }
@@ -77,7 +77,7 @@ class Updater
     protected function getValues($record)
     {
         $values = collect($record)->reject(function($value, $key) {
-            if($this->isAttribute($key)) {
+            if($this->isCriteria($key)) {
                 return true;
             }
 
@@ -120,12 +120,12 @@ class Updater
     }
 
     /**
-     * Check if column is an attribute
+     * Check if column is criteria for a condition match
      *
      * @param string $key
      * @return boolean
      */
-    protected function isAttribute($key)
+    protected function isCriteria($key)
     {
         return substr($key, 0, 1) == '_';
     }
