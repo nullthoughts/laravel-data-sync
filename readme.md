@@ -5,7 +5,7 @@ Laravel utility to keep records synced between enviroments through source contro
 
 - Create a JSON file for each model, using the model name as the filename. Example: Product.json would update the Product model
 - Use nested arrays in place of hardcoded IDs for relationships
-- Run `php artisan vendor:publish  --tag="data-sync-config"` to publish config file. Specify directory for sync data files (default is a new sync directory in the project root)
+- Run `php artisan vendor:publish --provider="distinctm\LaravelDataSync\DataSyncBaseServiceProvider" --tag="data-sync-config"` to publish config file. Specify directory for sync data files (default is a new sync directory in the project root)
 - Run `php artisan data:sync`
 
 ## Notes
