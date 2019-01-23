@@ -10,10 +10,12 @@ class Updater
 
     /**
      * Get files in sync directory
+     *
+     * @param string|null $path
      */
-    public function __construct()
+    public function __construct($path = null)
     {
-        $this->files = Storage::disk('sync')->files();
+        $this->files = Storage::files($this->getDirectory($path));
     }
 
     /**
@@ -23,9 +25,11 @@ class Updater
      */
     public function run()
     {
-        collect($this->files)->each(function($file) {
-            $this->syncModel($file);
+        $records = collect($this->files)->map(function($file) {
+            return $this->syncModel($file);
         });
+
+        return $records;
     }
 
     /**
@@ -39,12 +43,31 @@ class Updater
         $model = $this->getModel($file);
         $records = $this->getRecords($file);
 
-        return $records->map(function($record) use ($model) {
+        $records->each(function($record) use ($model) {
             $criteria = $this->getCriteria($record);
             $values = $this->getValues($record);
 
             return $model::updateOrCreate($criteria, $values);
         });
+
+        return $records;
+    }
+
+    /**
+     * Get sync files directory path
+     *
+     * @param object $record
+     * @return array
+     */
+    protected function getDirectory($path)
+    {
+        $directory = $path ?? config('data-sync.path', base_path('sync'));
+
+        if(!file_exists($directory)) {
+            throw new \Exception("Specified sync file directory does not exist");
+        }
+
+        return $directory;
     }
 
     /**
