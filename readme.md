@@ -9,7 +9,7 @@ Laravel utility to keep records synced between enviroments through source contro
 
 
 ## Examples
-**User.json**:
+### User.json:
 ```json
 [
     {
@@ -28,10 +28,9 @@ Laravel utility to keep records synced between enviroments through source contro
 ]
 ```
 
-translates to:
+translates to...
 
 ```php
-
 User::updateOrCreate([
     'email' => 'ferris@buellerandco.com',
 ],[
@@ -43,6 +42,80 @@ User::updateOrCreate([
                         ->first()
                         ->id,
 ]);
+```
+
+### Role.json:
+```json
+[
+    {
+        "_slug": "update-student-records"
+    },
+    {
+        "_slug": "borrow-ferrari"
+    },
+    {
+        "_slug": "destroy-ferrari"
+    }
+]
+```
+
+translates to...
+
+```php
+    Role::updateOrCreate(['slug' => 'update-student-records']);
+
+    Role::updateOrCreate(['slug' => 'borrow-ferrari']);
+
+    Role::updateOrCreate(['slug' => 'destroy-ferrari']);
+```
+
+### RoleUser.json (pivot table with model):
+```json
+[
+    {
+        "_user": {
+            "email": "ferris@buellerandco.com"
+        },
+        "_role": {
+            "slug": "update-student-records"
+        }
+    },
+    {
+        "_user": {
+            "email": "ferris@buellerandco.com"
+        },
+        "_role": {
+            "slug": "borrow-ferrari"
+        }
+    },
+    {
+        "_user": {
+            "email": "ferris@buellerandco.com"
+        },
+        "_role": {
+            "slug": "destroy-ferrari"
+        }
+    }
+]
+```
+
+translates to...
+
+```php
+    RoleUser::updateOrCreate([
+        'user_id' => User::where('email', 'ferris@buellerandco.com')->first()->id,
+        'role_id' => Role::where('slug', 'update-student-records')->first()->id,
+    ]);
+
+    RoleUser::updateOrCreate([
+        'user_id' => User::where('email', 'ferris@buellerandco.com')->first()->id,
+        'role_id' => Role::where('slug', 'borrow-ferrari')->first()->id,
+    ]);
+
+    RoleUser::updateOrCreate([
+        'user_id' => User::where('email', 'ferris@buellerandco.com')->first()->id,
+        'role_id' => Role::where('slug', 'destroy-ferrari')->first()->id,
+    ]);
 
 ```
 
