@@ -16,9 +16,9 @@ Laravel utility to keep records synced between enviroments through source contro
         "name": "Ferris Bueller",
         "properties->title": "Leisure Consultant",
         "phone_numbers->mobile": "555-555-5555",
-        "phone_numbers->office": "", // empty values are skipped
-        "_email": "ferris@buellerandco.com", // the criteria/attributes for updateOrCreate are identified with a preleading underscore
-        "department": { // nested values represent relationships and are returned using where($key, $value)->first()
+        "phone_numbers->office": "",
+        "_email": "ferris@buellerandco.com",
+        "department": {
             "name": "Management",
             "location": {
                 "name": "Chicago"
@@ -45,3 +45,8 @@ User::updateOrCreate([
 ]);
 
 ```
+
+## Notes
+- empty values are skipped
+- the criteria/attributes for updateOrCreate are identified with a preleading underscore
+- nested values represent relationships and are returned using where($key, $value)->first()->id
