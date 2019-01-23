@@ -11,5 +11,15 @@
     "require": {},
     "require-dev": {
         "orchestra/testbench": "^3.7"
+    },
+    "autoload": {
+        "psr-4" : {
+            "distinctm\\LaravelDataSyc\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4" : {
+            "distinctm\\LaravelDataSyc\\Tests\\": "tests/"
+        }
     }
 }
