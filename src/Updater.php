@@ -47,10 +47,13 @@ class Updater
         $records = $this->getRecords($file);
 
         $records->each(function($record) use ($model) {
-            $record = $this->resolveObjects($record);
+            $criteria = $this->resolveObjects(
+                $this->getCriteria($record)
+            );
 
-            $criteria = $this->getCriteria($record);
-            $values = $this->getValues($record);
+            $values = $this->resolveObjects(
+                $this->getValues($record)
+            );
 
             $model::updateOrCreate($criteria, $values);
         });
@@ -91,12 +94,12 @@ class Updater
     /**
      * Filter record criteria
      *
-     * @param \Illuminate\Support\Collection $record
+     * @param object $record
      * @return array
      */
-    protected function getCriteria(\Illuminate\Support\Collection $record)
+    protected function getCriteria(object $record)
     {
-        $criteria = $record->filter(function($value, $key) {
+        $criteria = collect($record)->filter(function($value, $key) {
             return $this->isCriteria($key);
         });
 
@@ -106,18 +109,18 @@ class Updater
 
         return $criteria->mapWithKeys(function($value, $key) {
             return [substr($key, 1) => $value];
-        })->toArray();
+        });
     }
 
     /**
      * Filter record values
      *
-     * @param \Illuminate\Support\Collection $record
+     * @param object $record
      * @return array
      */
-    protected function getValues(\Illuminate\Support\Collection $record)
+    protected function getValues(object $record)
     {
-        return $record->reject(function($value, $key) {
+        return collect($record)->reject(function($value, $key) {
             if($this->isCriteria($key)) {
                 return true;
             }
@@ -127,7 +130,7 @@ class Updater
             }
 
             return false;
-        })->toArray();
+        });
     }
 
     /**
@@ -178,9 +181,11 @@ class Updater
      */
     protected function resolveId(string $key, object $values)
     {
+        // $column = $this->isCriteria($key) ? substr($key, 1) : $key;
         $model = $this->getModel($key);
         
         $values = collect($values)->mapWithKeys(function($value, $column) {
+
             if(is_object($value)) {
                 return $this->resolveId($column, $value);
             }
@@ -194,18 +199,18 @@ class Updater
     /**
      * Detect nested objects and resolve them
      *
-     * @param object $records
-     * @return \Illuminate\Support\Collection
+     * @param \Illuminate\Support\Collection $records
+     * @return array
      */
-    protected function resolveObjects(object $record)
+    protected function resolveObjects(\Illuminate\Support\Collection $record)
     {
-        return collect($record)->mapWithKeys(function($value, $key) {
+        return $record->mapWithKeys(function($value, $key) {
             if(is_object($value)) {
                 return $this->resolveId($key, $value);
             }
 
             return [$key => $value];
-        });
+        })->toArray();
     }
 
 }
