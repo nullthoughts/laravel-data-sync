@@ -2,11 +2,16 @@
 
 Laravel utility to keep records synced between enviroments through source control
 
-- Add new `sync` disk in `config/filesystems.php`
+
 - Create a JSON file for each model, using the model name as the filename. Example: Product.json would update the Product model
 - Use nested arrays in place of hardcoded IDs for relationships
+- Run `php artisan vendor:publish  --tag="data-sync-config"` to publish config file. Specify directory for sync data files (default is a new sync directory in the project root)
 - Run `php artisan data:sync`
 
+## Notes
+- empty values are skipped
+- the criteria/attributes for updateOrCreate are identified with a preleading underscore
+- nested values represent relationships and are returned using where($key, $value)->first()->id
 
 ## Examples
 ### User.json:
@@ -118,8 +123,3 @@ translates to...
     ]);
 
 ```
-
-## Notes
-- empty values are skipped
-- the criteria/attributes for updateOrCreate are identified with a preleading underscore
-- nested values represent relationships and are returned using where($key, $value)->first()->id
