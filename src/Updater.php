@@ -181,7 +181,6 @@ class Updater
      */
     protected function resolveId(string $key, object $values)
     {
-        // $column = $this->isCriteria($key) ? substr($key, 1) : $key;
         $model = $this->getModel($key);
         
         $values = collect($values)->mapWithKeys(function($value, $column) {
