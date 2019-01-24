@@ -13,12 +13,10 @@ class Updater
      *
      * @param string|null $path
      */
-    public function __construct($path = null)
+    public function __construct($path = null, $model = null)
     {
-        
-        $this->files = $this->getFiles(
-            $this->getDirectory($path)
-        );
+        $directory = $this->getDirectory($path);
+        $this->files = $this->getFiles($directory, $model);
     }
 
     /**
@@ -84,8 +82,12 @@ class Updater
      * @param string $directory
      * @return void
      */
-    protected function getFiles(string $directory)
+    protected function getFiles(string $directory, string $model)
     {
+        if($model) {
+            return $directory . '/' . $model . '.json';
+        }
+
         return collect(File::files($directory))->map(function($path) {
             return $path->getPathname();
         })->toArray();
