@@ -8,6 +8,16 @@ Laravel utility to keep records synced between enviroments through source contro
 - Run `php artisan vendor:publish --provider="distinctm\LaravelDataSync\DataSyncBaseServiceProvider" --tag="data-sync-config"` to publish config file. Specify directory for sync data files (default is a new sync directory in the project root)
 - Run `php artisan data:sync`
 
+### Optional
+If using Laravel Forge, you can have the data sync run automatically on deploy. Edit your deploy script in Site -> App to include:
+```
+if [ -f artisan ]
+then
+    php artisan data:sync
+    php artisan migrate --force
+fi
+```
+
 ## Notes
 - empty values are skipped
 - the criteria/attributes for updateOrCreate are identified with a preleading underscore
