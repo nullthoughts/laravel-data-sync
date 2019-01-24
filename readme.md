@@ -19,6 +19,7 @@ fi
 ```
 
 ## Notes
+- use studly case for model name relationships as JSON keys (example: 'option_group' => 'OptionGroup'). This is important for case sensitive file systems.
 - empty values are skipped
 - the criteria/attributes for updateOrCreate are identified with a preleading underscore
 - nested values represent relationships and are returned using where($key, $value)->first()->id

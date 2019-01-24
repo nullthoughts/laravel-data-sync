@@ -141,7 +141,7 @@ class Updater
      */
     protected function getModel(string $name)
     {
-        return '\\App\\' . pathinfo($name, PATHINFO_FILENAME);
+        return '\\App\\' . studly_case(pathinfo($name, PATHINFO_FILENAME));
     }
 
     /**
