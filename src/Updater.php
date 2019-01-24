@@ -80,9 +80,10 @@ class Updater
      * Get list of files in directory
      *
      * @param string $directory
-     * @return void
+     * @param string\null $model
+     * @return array
      */
-    protected function getFiles(string $directory, string $model)
+    protected function getFiles(string $directory, $model)
     {
         if($model) {
             return $directory . '/' . $model . '.json';
