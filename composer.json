@@ -8,7 +8,9 @@
             "email": "jani@marketdistinctly.com"
         }
     ],
-    "require": {},
+    "require": {
+        "ext-json": "*"
+    },
     "require-dev": {
         "orchestra/testbench": "^3.7"
     },
