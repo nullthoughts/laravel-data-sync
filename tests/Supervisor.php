@@ -4,14 +4,14 @@ namespace distinctm\LaravelDataSync\Tests;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Roles extends Model
+class Supervisor extends Model
 {
     public $timestamps = false;
 
     protected $guarded = [];
 
-    public function supervisor()
+    public function roles()
     {
-        return $this->belongsTo(Supervisor::class);
+        return $this->hasMany(Roles::class);
     }
 }

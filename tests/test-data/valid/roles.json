@@ -1,14 +1,14 @@
 [
     {
         "_slug": "update-student-records",
-        "category": "testing"
+        "category": "changed"
     },
     {
         "_slug": "borrow-ferrari",
-        "category": "cars"
+        "category": "changed"
     },
     {
         "_slug": "destroy-ferrari",
-        "category": "cars"
+        "category": "changed"
     }
 ]
