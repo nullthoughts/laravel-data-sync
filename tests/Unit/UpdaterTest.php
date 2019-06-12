@@ -131,4 +131,13 @@ class UpdaterTest extends TestCase
         $updater = new UpdaterFake(__DIR__ . '/../test-data/ordered');
         $updater->run();
     }
+
+    /** @test */
+    public function it_ignores_non_json_files()
+    {
+        $updater = new UpdaterFake(__DIR__ . '/../test-data/not-json');
+        $updater->run();
+
+        $this->assertDatabaseMissing('roles', ['slug' => 'update-student-records']);
+    }
 }

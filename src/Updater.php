@@ -106,9 +106,12 @@ class Updater
             return Collection::wrap($directory . '/' . $model . '.json');
         }
 
-        return collect(File::files($directory))->map(function ($path) {
-            return $path->getPathname();
-        });
+        return collect(File::files($directory))
+            ->filter(function($file) {
+                return pathinfo($file, PATHINFO_EXTENSION) == 'json';
+            })->map(function ($path) {
+                return $path->getPathname();
+            });
     }
 
     /**
