@@ -6,7 +6,7 @@ Laravel utility to keep records synced between enviroments through source contro
 - Create a JSON file for each model, using the model name as the filename. Example: Product.json would update the Product model
 - Use nested arrays in place of hardcoded IDs for relationships
 - Run `php artisan vendor:publish --provider="distinctm\LaravelDataSync\DataSyncBaseServiceProvider" --tag="data-sync-config"` to publish config file. Specify directory for sync data files (default is a new sync directory in the project root)
-- Run `php artisan data:sync`
+- Run `php artisan data:sync` (or `php artisan data:sync --model={model}` with the model flag to specify a model)
 
 ### Optional
 If using Laravel Forge, you can have the data sync run automatically on deploy. Edit your deploy script in Site -> App to include:
@@ -21,8 +21,18 @@ fi
 ## Notes
 - use studly case for model name relationships as JSON keys (example: 'option_group' => 'OptionGroup'). This is important for case sensitive file systems.
 - empty values are skipped
-- the criteria/attributes for updateOrCreate are identified with a preleading underscore
+- the criteria/attributes for updateOrCreate are identified with a leading underscore
 - nested values represent relationships and are returned using where($key, $value)->first()->id
+- order of import can be set in _config/data-sync.php_ with an array:
+```
+return [
+    'path' => base_path('sync'),
+    'order' => [
+        'Role',
+        'Supervisor',
+    ]
+];
+```
 
 ## Examples
 ### User.json:

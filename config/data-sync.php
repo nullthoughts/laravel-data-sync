@@ -2,4 +2,7 @@
 
 return [
     'path' => base_path('sync'),
+    'order' => [
+        //
+    ]
 ];

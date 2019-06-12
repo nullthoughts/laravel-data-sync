@@ -7,6 +7,7 @@ use distinctm\LaravelDataSync\Exceptions\NoCriteriaException;
 use distinctm\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use distinctm\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 
 class Updater
 {
@@ -31,11 +32,17 @@ class Updater
      */
     public function run()
     {
-        $records = collect($this->files)->map(function ($file) {
-            return $this->syncModel($file);
-        });
+        $files = $this->sortModels($this->files);
 
-        return $records;
+        return $files->map(function ($file) {
+            try {
+                return $this->syncModel($file);
+            } catch (\ErrorException $e) {
+                $model = pathinfo($file, PATHINFO_FILENAME);
+
+                throw new ErrorUpdatingModelException(ucwords($model));
+            }
+        });
     }
 
     /**
@@ -71,7 +78,7 @@ class Updater
      *
      * @param $path
      *
-     * @return array
+     * @return string
      * @throws \distinctm\LaravelDataSync\Exceptions\FileDirectoryNotFoundException
      */
     protected function getDirectory($path)
@@ -91,17 +98,41 @@ class Updater
      * @param string $directory
      * @param string|null $model
      *
-     * @return array|string
+     * @return \Illuminate\Support\Collection
      */
-    protected function getFiles(string $directory, $model)
+    protected function getFiles(string $directory, $model = null)
     {
         if ($model) {
-            return $directory . '/' . $model . '.json';
+            return Collection::wrap($directory . '/' . $model . '.json');
         }
 
         return collect(File::files($directory))->map(function ($path) {
             return $path->getPathname();
-        })->toArray();
+        });
+    }
+
+    /**
+     * Sort Models by pre-configured order
+     *
+     * @param \Illuminate\Support\Collection $files
+     * @return \Illuminate\Support\Collection
+     */
+    protected function sortModels(\Illuminate\Support\Collection $files)
+    {
+        if(empty(config('data-sync.order'))) {
+            return $files;
+        }
+        
+        return $files->sortBy(function($file) use ($files) {
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+            
+            $order = array_search(
+                studly_case($filename), 
+                config('data-sync.order')
+            );
+            
+            return $order !== false ? $order : (count($files) + 1);
+        });
     }
 
     /**
@@ -109,7 +140,7 @@ class Updater
      *
      * @param object $record
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      * @throws \distinctm\LaravelDataSync\Exceptions\NoCriteriaException
      */
     protected function getCriteria(object $record)
@@ -132,7 +163,7 @@ class Updater
      *
      * @param object $record
      *
-     * @return array
+     * @return \Illuminate\Support\Collection
      */
     protected function getValues(object $record)
     {

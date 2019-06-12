@@ -4,6 +4,7 @@ namespace distinctm\LaravelDataSync\Tests;
 
 use distinctm\LaravelDataSync\Tests\Fakes\UpdaterFake;
 use Exception;
+use distinctm\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 
 class UpdaterTest extends TestCase
 {
@@ -86,7 +87,6 @@ class UpdaterTest extends TestCase
         } catch (Exception $e) {
             $this->assertContains('No records or invalid JSON for', $e->getMessage());
         }
-
     }
 
     /** @test */
@@ -101,6 +101,34 @@ class UpdaterTest extends TestCase
         } catch (Exception $e) {
            $this->assertEquals('No criteria/attributes detected', $e->getMessage());
         }
+    }
 
+    /** @test */
+    public function order_of_imports_can_be_defined_in_config()
+    {
+        config()->set('data-sync.order', [
+            'Supervisor',
+            'Roles'
+        ]);
+
+        $updater = new UpdaterFake(__DIR__ . '/../test-data/ordered');
+        $updater->run();
+
+        $this->assertDatabaseHas('roles', ['slug' => 'update-student-records']);
+        $this->assertDatabaseHas('supervisors', ['name' => 'CEO']);
+    }
+
+    /** @test */
+    public function exception_is_thrown_if_imports_are_in_incorrect_order()
+    {
+        config()->set('data-sync.order', [
+            'Roles',
+            'Supervisor'
+        ]);
+
+        $this->expectException(ErrorUpdatingModelException::class);
+        
+        $updater = new UpdaterFake(__DIR__ . '/../test-data/ordered');
+        $updater->run();
     }
 }
