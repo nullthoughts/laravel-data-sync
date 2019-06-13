@@ -1,6 +1,6 @@
 # Laravel Data Sync
 
-Laravel utility to keep records synced between enviroments through source control
+Laravel utility to keep records synced between environments through source control
 
 ## Installation & Usage
 - Via composer: `composer require distinctm/laravel-data-sync`
