@@ -17,9 +17,9 @@ class Sync extends Command
         $model = $this->option('model');
 
         $this->info('Updating Models with sync data files');
- 
+
         (new Updater($path, $model))->run();
- 
+
         $this->comment('Data sync completed');
     }
 }
