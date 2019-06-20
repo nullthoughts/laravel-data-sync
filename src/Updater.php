@@ -2,17 +2,17 @@
 
 namespace distinctm\LaravelDataSync;
 
+use distinctm\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 use distinctm\LaravelDataSync\Exceptions\FileDirectoryNotFoundException;
 use distinctm\LaravelDataSync\Exceptions\NoCriteriaException;
 use distinctm\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use distinctm\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 
 class Updater
 {
     /**
-     * Get files in sync directory
+     * Get files in sync directory.
      *
      * @param string|null $path
      * @param string|null $model
@@ -26,7 +26,7 @@ class Updater
     }
 
     /**
-     * Execute syncModel for each file
+     * Execute syncModel for each file.
      *
      * @return mixed
      */
@@ -46,12 +46,13 @@ class Updater
     }
 
     /**
-     * Parse each record for criteria/values and update/create model
+     * Parse each record for criteria/values and update/create model.
      *
      * @param string $file
      *
-     * @return \Illuminate\Support\Collection
      * @throws \distinctm\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
+     *
+     * @return \Illuminate\Support\Collection
      */
     protected function syncModel(string $file)
     {
@@ -74,28 +75,29 @@ class Updater
     }
 
     /**
-     * Get directory path for sync files
+     * Get directory path for sync files.
      *
      * @param $path
      *
-     * @return string
      * @throws \distinctm\LaravelDataSync\Exceptions\FileDirectoryNotFoundException
+     *
+     * @return string
      */
     protected function getDirectory($path)
     {
         $directory = $path ?? config('data-sync.path', base_path('sync'));
 
         if (!file_exists($directory)) {
-            throw new FileDirectoryNotFoundException;
+            throw new FileDirectoryNotFoundException();
         }
 
         return $directory;
     }
 
     /**
-     * Get list of files in directory
+     * Get list of files in directory.
      *
-     * @param string $directory
+     * @param string      $directory
      * @param string|null $model
      *
      * @return \Illuminate\Support\Collection
@@ -103,11 +105,11 @@ class Updater
     protected function getFiles(string $directory, $model = null)
     {
         if ($model) {
-            return Collection::wrap($directory . '/' . $model . '.json');
+            return Collection::wrap($directory.'/'.$model.'.json');
         }
 
         return collect(File::files($directory))
-            ->filter(function($file) {
+            ->filter(function ($file) {
                 return pathinfo($file, PATHINFO_EXTENSION) == 'json';
             })->map(function ($path) {
                 return $path->getPathname();
@@ -115,36 +117,38 @@ class Updater
     }
 
     /**
-     * Sort Models by pre-configured order
+     * Sort Models by pre-configured order.
      *
      * @param \Illuminate\Support\Collection $files
+     *
      * @return \Illuminate\Support\Collection
      */
     protected function sortModels(\Illuminate\Support\Collection $files)
     {
-        if(empty(config('data-sync.order'))) {
+        if (empty(config('data-sync.order'))) {
             return $files;
         }
-        
-        return $files->sortBy(function($file) use ($files) {
+
+        return $files->sortBy(function ($file) use ($files) {
             $filename = pathinfo($file, PATHINFO_FILENAME);
-            
+
             $order = array_search(
-                studly_case($filename), 
+                studly_case($filename),
                 config('data-sync.order')
             );
-            
+
             return $order !== false ? $order : (count($files) + 1);
         });
     }
 
     /**
-     * Filter record criteria
+     * Filter record criteria.
      *
      * @param object $record
      *
-     * @return \Illuminate\Support\Collection
      * @throws \distinctm\LaravelDataSync\Exceptions\NoCriteriaException
+     *
+     * @return \Illuminate\Support\Collection
      */
     protected function getCriteria(object $record)
     {
@@ -153,7 +157,7 @@ class Updater
         });
 
         if ($criteria->count() == 0) {
-            throw new NoCriteriaException;
+            throw new NoCriteriaException();
         }
 
         return $criteria->mapWithKeys(function ($value, $key) {
@@ -162,7 +166,7 @@ class Updater
     }
 
     /**
-     * Filter record values
+     * Filter record values.
      *
      * @param object $record
      *
@@ -184,7 +188,7 @@ class Updater
     }
 
     /**
-     * Returns model name for file
+     * Returns model name for file.
      *
      * @param string $name
      *
@@ -192,16 +196,17 @@ class Updater
      */
     protected function getModel(string $name)
     {
-        return '\\App\\' . studly_case(pathinfo($name, PATHINFO_FILENAME));
+        return '\\App\\'.studly_case(pathinfo($name, PATHINFO_FILENAME));
     }
 
     /**
-     * Parses JSON from file and returns collection
+     * Parses JSON from file and returns collection.
      *
      * @param string $file
      *
-     * @return \Illuminate\Support\Collection
      * @throws \distinctm\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
+     *
+     * @return \Illuminate\Support\Collection
      */
     protected function getRecords(string $file)
     {
@@ -215,11 +220,11 @@ class Updater
     }
 
     /**
-     * Check if column is criteria for a condition match
+     * Check if column is criteria for a condition match.
      *
      * @param string $key
      *
-     * @return boolean
+     * @return bool
      */
     protected function isCriteria($key)
     {
@@ -227,7 +232,7 @@ class Updater
     }
 
     /**
-     * Return ID for nested key-value pairs
+     * Return ID for nested key-value pairs.
      *
      * @param string $key
      * @param object $values
@@ -239,7 +244,6 @@ class Updater
         $model = $this->getModel($key);
 
         $values = collect($values)->mapWithKeys(function ($value, $column) {
-
             if (is_object($value)) {
                 return $this->resolveId($column, $value);
             }
@@ -247,11 +251,11 @@ class Updater
             return [$column => $value];
         })->toArray();
 
-        return [$key . '_id' => $model::where($values)->first()->id];
+        return [$key.'_id' => $model::where($values)->first()->id];
     }
 
     /**
-     * Detect nested objects and resolve them
+     * Detect nested objects and resolve them.
      *
      * @param \Illuminate\Support\Collection $record
      *
@@ -267,5 +271,4 @@ class Updater
             return [$key => $value];
         })->toArray();
     }
-
 }

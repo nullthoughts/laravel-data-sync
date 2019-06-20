@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'path' => base_path('sync'),
+    'path'  => base_path('sync'),
     'order' => [
         //
-    ]
+    ],
 ];

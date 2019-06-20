@@ -23,7 +23,7 @@ class DataSyncBaseServiceProvider extends ServiceProvider
     protected function registerPublishing()
     {
         $this->publishes([
-            __DIR__ . '/../config/data-sync.php' => config_path('data-sync.php'),
+            __DIR__.'/../config/data-sync.php' => config_path('data-sync.php'),
         ], 'data-sync-config');
     }
 }
