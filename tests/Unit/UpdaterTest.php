@@ -2,16 +2,16 @@
 
 namespace distinctm\LaravelDataSync\Tests;
 
+use distinctm\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 use distinctm\LaravelDataSync\Tests\Fakes\UpdaterFake;
 use Exception;
-use distinctm\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 
 class UpdaterTest extends TestCase
 {
     /** @test */
     public function it_adds_roles_to_the_database()
     {
-        $updater = new UpdaterFake(__DIR__ . '/../test-data', 'roles');
+        $updater = new UpdaterFake(__DIR__.'/../test-data', 'roles');
 
         $updater->run();
 
@@ -23,7 +23,7 @@ class UpdaterTest extends TestCase
     /** @test */
     public function it_can_default_to_configuration()
     {
-        config()->set('data-sync.path', __DIR__ . '/../test-data');
+        config()->set('data-sync.path', __DIR__.'/../test-data');
 
         $updater = new UpdaterFake();
 
@@ -37,10 +37,10 @@ class UpdaterTest extends TestCase
     /** @test */
     public function it_can_update_an_existing_record()
     {
-        config()->set('data-sync.path', __DIR__ . '/../test-data');
+        config()->set('data-sync.path', __DIR__.'/../test-data');
         (new UpdaterFake())->run();
 
-        config()->set('data-sync.path', __DIR__ . '/../test-data/valid');
+        config()->set('data-sync.path', __DIR__.'/../test-data/valid');
         (new UpdaterFake())->run();
 
         $this->assertDatabaseHas('roles', ['category' => 'changed']);
@@ -55,7 +55,7 @@ class UpdaterTest extends TestCase
             'name' => 'CEO',
         ]);
 
-        config()->set('data-sync.path', __DIR__ . '/../test-data/relationship', 'roles');
+        config()->set('data-sync.path', __DIR__.'/../test-data/relationship', 'roles');
         (new UpdaterFake())->run();
 
         $this->assertEquals($supervisor->id, Roles::first()->supervisor_id);
@@ -69,21 +69,19 @@ class UpdaterTest extends TestCase
             new UpdaterFake();
 
             $this->fail('exception was thrown');
-
         } catch (Exception $e) {
             $this->assertEquals('Specified sync file directory does not exist', $e->getMessage());
         }
     }
-    
+
     /** @test */
     public function invalid_json_throws_an_exception()
     {
         try {
-            $updater = new UpdaterFake(__DIR__ . '/../test-data/invalid-json');
+            $updater = new UpdaterFake(__DIR__.'/../test-data/invalid-json');
             $updater->run();
 
             $this->fail('exception was thrown');
-
         } catch (Exception $e) {
             $this->assertContains('No records or invalid JSON for', $e->getMessage());
         }
@@ -93,13 +91,12 @@ class UpdaterTest extends TestCase
     public function the_json_must_contain_a_key_with_an_underscore()
     {
         try {
-            $updater = new UpdaterFake(__DIR__ . '/../test-data/no-criteria');
+            $updater = new UpdaterFake(__DIR__.'/../test-data/no-criteria');
             $updater->run();
 
             $this->fail('exception was thrown');
-
         } catch (Exception $e) {
-           $this->assertEquals('No criteria/attributes detected', $e->getMessage());
+            $this->assertEquals('No criteria/attributes detected', $e->getMessage());
         }
     }
 
@@ -108,10 +105,10 @@ class UpdaterTest extends TestCase
     {
         config()->set('data-sync.order', [
             'Supervisor',
-            'Roles'
+            'Roles',
         ]);
 
-        $updater = new UpdaterFake(__DIR__ . '/../test-data/ordered');
+        $updater = new UpdaterFake(__DIR__.'/../test-data/ordered');
         $updater->run();
 
         $this->assertDatabaseHas('roles', ['slug' => 'update-student-records']);
@@ -123,19 +120,19 @@ class UpdaterTest extends TestCase
     {
         config()->set('data-sync.order', [
             'Roles',
-            'Supervisor'
+            'Supervisor',
         ]);
 
         $this->expectException(ErrorUpdatingModelException::class);
-        
-        $updater = new UpdaterFake(__DIR__ . '/../test-data/ordered');
+
+        $updater = new UpdaterFake(__DIR__.'/../test-data/ordered');
         $updater->run();
     }
 
     /** @test */
     public function it_ignores_non_json_files()
     {
-        $updater = new UpdaterFake(__DIR__ . '/../test-data/not-json');
+        $updater = new UpdaterFake(__DIR__.'/../test-data/not-json');
         $updater->run();
 
         $this->assertDatabaseMissing('roles', ['slug' => 'update-student-records']);
