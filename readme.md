@@ -5,7 +5,7 @@
 
 # Laravel Data Sync
 
-Laravel utility to keep records synced between environments through source control
+Laravel utility to keep records synchronized between environments through source control
 
 ## Installation 
 You can install this package via composer:
