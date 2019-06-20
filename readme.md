@@ -1,9 +1,30 @@
+<p align="center">
+<a href="https://packagist.org/packages/distinctm/laravel-data-sync" target="_blank"><img src="https://poser.pugx.org/distinctm/laravel-data-sync/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/distinctm/laravel-data-sync" target="_blank"><img src="https://poser.pugx.org/distinctm/laravel-data-sync/v/stable.svg" alt="Latest Stable Version"></a>
+</p>
+
 # Laravel Data Sync
 
 Laravel utility to keep records synced between environments through source control
 
-## Installation & Usage
-- Via composer: `composer require distinctm/laravel-data-sync`
+## Installation 
+You can install this package via composer:
+```bash
+composer require distinctm/laravel-data-sync
+``` 
+
+Or add this line in your `composer.json`, inside of the `require` section:
+
+``` json
+{
+    "require": {
+        "distinctm/laravel-data-sync": "^1.0",
+    }
+}
+```
+then run ` composer install `
+
+## Usage
 - Run `php artisan vendor:publish --provider="distinctm\LaravelDataSync\DataSyncBaseServiceProvider" --tag="data-sync-config"` to publish config file. Specify directory for sync data files (default is a new sync directory in the project root)
 - Create a JSON file for each model, using the model name as the filename. Example: Product.json would update the Product model
 - Use nested arrays in place of hardcoded IDs for relationships
