@@ -8,6 +8,7 @@ use distinctm\LaravelDataSync\Exceptions\NoCriteriaException;
 use distinctm\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use stdClass;
 
 class Updater
 {
@@ -144,13 +145,13 @@ class Updater
     /**
      * Filter record criteria.
      *
-     * @param object $record
+     * @param stdClass $record
      *
      * @throws \distinctm\LaravelDataSync\Exceptions\NoCriteriaException
      *
      * @return \Illuminate\Support\Collection
      */
-    protected function getCriteria(object $record)
+    protected function getCriteria(stdClass $record)
     {
         $criteria = collect($record)->filter(function ($value, $key) {
             return $this->isCriteria($key);
@@ -168,11 +169,11 @@ class Updater
     /**
      * Filter record values.
      *
-     * @param object $record
+     * @param stdClass $record
      *
      * @return \Illuminate\Support\Collection
      */
-    protected function getValues(object $record)
+    protected function getValues(stdClass $record)
     {
         return collect($record)->reject(function ($value, $key) {
             if ($this->isCriteria($key)) {
@@ -235,11 +236,11 @@ class Updater
      * Return ID for nested key-value pairs.
      *
      * @param string $key
-     * @param object $values
+     * @param stdClass $values
      *
      * @return array
      */
-    protected function resolveId(string $key, object $values)
+    protected function resolveId(string $key, stdClass $values)
     {
         $model = $this->getModel($key);
 
