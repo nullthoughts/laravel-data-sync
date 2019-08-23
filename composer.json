@@ -1,6 +1,6 @@
 {
     "name": "distinctm/laravel-data-sync",
-    "description": "Laravel utility to keep records synced between enviroments through source control",
+    "description": "Laravel utility to keep records synced between environments through source control",
     "license": "MIT",
     "authors": [
         {
