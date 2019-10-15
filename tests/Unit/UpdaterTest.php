@@ -3,7 +3,7 @@
 namespace distinctm\LaravelDataSync\Tests;
 
 use distinctm\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
-use distinctm\LaravelDataSync\Tests\Fakes\UpdaterFake;
+use distinctm\LaravelDataSync\Tests\fakes\UpdaterFake;
 use Exception;
 
 class UpdaterTest extends TestCase

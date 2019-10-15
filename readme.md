@@ -1,7 +1,7 @@
 <p align="center">
 <a href="https://packagist.org/packages/distinctm/laravel-data-sync" target="_blank"><img src="https://poser.pugx.org/distinctm/laravel-data-sync/d/total.svg" alt="Total Downloads"></a>
 <a href="https://packagist.org/packages/distinctm/laravel-data-sync" target="_blank"><img src="https://poser.pugx.org/distinctm/laravel-data-sync/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://travis-ci.com/distinctm/laravel-data-sync"><img src="https://api.travis-ci.com/nullthoughts/laravel-data-sync.svg?branch=master" alt="Travis CI Build Status: Master"></a>
+<a href="https://travis-ci.com/nullthoughts/laravel-data-sync"><img src="https://api.travis-ci.com/nullthoughts/laravel-data-sync.svg?branch=master" alt="Travis CI Build Status: Master"></a>
 </p>
 
 # Laravel Data Sync
