@@ -1,6 +1,6 @@
 <?php
 
-namespace distinctm\LaravelDataSync\Tests\Fakes;
+namespace distinctm\LaravelDataSync\Tests\fakes;
 
 use distinctm\LaravelDataSync\Updater;
 
