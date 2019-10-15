@@ -8,6 +8,7 @@ use distinctm\LaravelDataSync\Exceptions\NoCriteriaException;
 use distinctm\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use stdClass;
 
 class Updater
@@ -134,7 +135,7 @@ class Updater
             $filename = pathinfo($file, PATHINFO_FILENAME);
 
             $order = array_search(
-                studly_case($filename),
+                Str::studly($filename),
                 config('data-sync.order')
             );
 
@@ -197,7 +198,7 @@ class Updater
      */
     protected function getModel(string $name)
     {
-        return '\\App\\'.studly_case(pathinfo($name, PATHINFO_FILENAME));
+        return '\\App\\'.Str::studly(pathinfo($name, PATHINFO_FILENAME));
     }
 
     /**
