@@ -1,11 +1,11 @@
 {
-    "name": "distinctm/laravel-data-sync",
+    "name": "nullthoughts/laravel-data-sync",
     "description": "Laravel utility to keep records synced between environments through source control",
     "license": "MIT",
     "authors": [
         {
-            "name": "distinctm",
-            "email": "jani@marketdistinctly.com"
+            "name": "nullthoughts",
+            "email": "jani@nullincorporated.com"
         }
     ],
     "require": {
