@@ -2,6 +2,7 @@
 
 namespace nullthoughts\LaravelDataSync;
 
+use Illuminate\Support\Facades\Storage;
 use nullthoughts\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 use nullthoughts\LaravelDataSync\Exceptions\FileDirectoryNotFoundException;
 use nullthoughts\LaravelDataSync\Exceptions\NoCriteriaException;
@@ -14,17 +15,43 @@ use stdClass;
 class Updater
 {
     /**
+     * @var string
+     */
+    private $directory;
+
+    /**
+     * @var \Illuminate\Support\Collection
+     */
+    private $files;
+
+    /**
+     * @var bool
+     */
+    private $remote;
+
+    /**
+     * @var string
+     */
+    private $disk;
+
+    /**
      * Get files in sync directory.
      *
-     * @param string|null $path
-     * @param string|null $model
+     * @param  string|null  $path
+     * @param  string|null  $model
+     *
+     * @param  bool  $remote
+     * @param  string  $disk
      *
      * @throws \nullthoughts\LaravelDataSync\Exceptions\FileDirectoryNotFoundException
      */
-    public function __construct($path = null, $model = null)
+    public function __construct($path = null, $model = null, $remote = false, $disk = 's3')
     {
-        $directory = $this->getDirectory($path);
-        $this->files = $this->getFiles($directory, $model);
+        $this->remote = $remote;
+        $this->disk = $disk;
+
+        $this->directory = $this->getDirectory($path);
+        $this->files = $this->getFiles($this->directory, $model);
     }
 
     /**
@@ -50,11 +77,11 @@ class Updater
     /**
      * Parse each record for criteria/values and update/create model.
      *
-     * @param string $file
-     *
-     * @throws \nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
+     * @param  string  $file
      *
      * @return \Illuminate\Support\Collection
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
      */
     protected function syncModel(string $file)
     {
@@ -89,7 +116,7 @@ class Updater
     {
         $directory = $path ?? config('data-sync.path', base_path('sync'));
 
-        if (!file_exists($directory)) {
+        if (!file_exists($directory) && !$this->remote) {
             throw new FileDirectoryNotFoundException();
         }
 
@@ -110,10 +137,17 @@ class Updater
             return Collection::wrap($directory.'/'.$model.'.json');
         }
 
-        return collect(File::files($directory))
+        $files = ($this->remote) ? Storage::disk($this->disk)->files($directory) : File::files($directory);
+
+        return collect($files)
             ->filter(function ($file) {
                 return pathinfo($file, PATHINFO_EXTENSION) == 'json';
             })->map(function ($path) {
+
+                if (is_string($path)) {
+                    return $path;
+                }
+
                 return $path->getPathname();
             });
     }
@@ -204,15 +238,17 @@ class Updater
     /**
      * Parses JSON from file and returns collection.
      *
-     * @param string $file
-     *
-     * @throws \nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
+     * @param  string  $file
      *
      * @return \Illuminate\Support\Collection
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     * @throws \nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
      */
     protected function getRecords(string $file)
     {
-        $records = collect(json_decode(File::get($file)));
+        $fetchedFile = ($this->remote) ? Storage::disk($this->disk)->get($file) : File::get($file);
+
+        $records = collect(json_decode($fetchedFile));
 
         if ($records->isEmpty()) {
             throw new NoRecordsInvalidJSONException($file);
