@@ -16,18 +16,18 @@
     },
     "autoload": {
         "psr-4" : {
-            "distinctm\\LaravelDataSync\\": "src/"
+            "nullthoughts\\LaravelDataSync\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4" : {
-            "distinctm\\LaravelDataSync\\Tests\\": "tests/"
+            "nullthoughts\\LaravelDataSync\\Tests\\": "tests/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "distinctm\\LaravelDataSync\\DataSyncBaseServiceProvider"
+                "nullthoughts\\LaravelDataSync\\DataSyncBaseServiceProvider"
             ]
         }
     }
