@@ -1,11 +1,11 @@
 <?php
 
-namespace distinctm\LaravelDataSync;
+namespace nullthoughts\LaravelDataSync;
 
-use distinctm\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
-use distinctm\LaravelDataSync\Exceptions\FileDirectoryNotFoundException;
-use distinctm\LaravelDataSync\Exceptions\NoCriteriaException;
-use distinctm\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException;
+use nullthoughts\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
+use nullthoughts\LaravelDataSync\Exceptions\FileDirectoryNotFoundException;
+use nullthoughts\LaravelDataSync\Exceptions\NoCriteriaException;
+use nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -19,7 +19,7 @@ class Updater
      * @param string|null $path
      * @param string|null $model
      *
-     * @throws \distinctm\LaravelDataSync\Exceptions\FileDirectoryNotFoundException
+     * @throws \nullthoughts\LaravelDataSync\Exceptions\FileDirectoryNotFoundException
      */
     public function __construct($path = null, $model = null)
     {
@@ -52,7 +52,7 @@ class Updater
      *
      * @param string $file
      *
-     * @throws \distinctm\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
+     * @throws \nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
      *
      * @return \Illuminate\Support\Collection
      */
@@ -81,7 +81,7 @@ class Updater
      *
      * @param $path
      *
-     * @throws \distinctm\LaravelDataSync\Exceptions\FileDirectoryNotFoundException
+     * @throws \nullthoughts\LaravelDataSync\Exceptions\FileDirectoryNotFoundException
      *
      * @return string
      */
@@ -148,7 +148,7 @@ class Updater
      *
      * @param stdClass $record
      *
-     * @throws \distinctm\LaravelDataSync\Exceptions\NoCriteriaException
+     * @throws \nullthoughts\LaravelDataSync\Exceptions\NoCriteriaException
      *
      * @return \Illuminate\Support\Collection
      */
@@ -206,7 +206,7 @@ class Updater
      *
      * @param string $file
      *
-     * @throws \distinctm\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
+     * @throws \nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
      *
      * @return \Illuminate\Support\Collection
      */

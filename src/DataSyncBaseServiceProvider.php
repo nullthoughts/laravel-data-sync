@@ -1,6 +1,6 @@
 <?php
 
-namespace distinctm\LaravelDataSync;
+namespace nullthoughts\LaravelDataSync;
 
 use Illuminate\Support\ServiceProvider;
 

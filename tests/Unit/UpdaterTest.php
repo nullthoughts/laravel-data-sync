@@ -1,9 +1,9 @@
 <?php
 
-namespace distinctm\LaravelDataSync\Tests;
+namespace nullthoughts\LaravelDataSync\Tests;
 
-use distinctm\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
-use distinctm\LaravelDataSync\Tests\fakes\UpdaterFake;
+use nullthoughts\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
+use nullthoughts\LaravelDataSync\Tests\fakes\UpdaterFake;
 use Exception;
 
 class UpdaterTest extends TestCase

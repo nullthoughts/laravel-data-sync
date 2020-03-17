@@ -1,6 +1,6 @@
 <?php
 
-namespace distinctm\LaravelDataSync\Exceptions;
+namespace nullthoughts\LaravelDataSync\Exceptions;
 
 use Exception;
 

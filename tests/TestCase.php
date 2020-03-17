@@ -1,6 +1,6 @@
 <?php
 
-namespace distinctm\LaravelDataSync\Tests;
+namespace nullthoughts\LaravelDataSync\Tests;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

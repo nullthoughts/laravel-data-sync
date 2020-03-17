@@ -1,8 +1,8 @@
 <?php
 
-namespace distinctm\LaravelDataSync\Console\Commands;
+namespace nullthoughts\LaravelDataSync\Console\Commands;
 
-use distinctm\LaravelDataSync\Updater;
+use nullthoughts\LaravelDataSync\Updater;
 use Illuminate\Console\Command;
 
 class Sync extends Command
