@@ -83,7 +83,7 @@ class UpdaterTest extends TestCase
 
             $this->fail('exception was thrown');
         } catch (Exception $e) {
-            $this->assertContains('No records or invalid JSON for', $e->getMessage());
+            $this->assertStringContainsString('No records or invalid JSON for', $e->getMessage());
         }
     }
 
