@@ -2,14 +2,14 @@
 
 namespace nullthoughts\LaravelDataSync;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use nullthoughts\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 use nullthoughts\LaravelDataSync\Exceptions\FileDirectoryNotFoundException;
 use nullthoughts\LaravelDataSync\Exceptions\NoCriteriaException;
 use nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use stdClass;
 
 class Updater
@@ -116,7 +116,7 @@ class Updater
     {
         $directory = $path ?? config('data-sync.path', base_path('sync'));
 
-        if (!file_exists($directory) && !$this->remote) {
+        if ($this->directoryMissingLocally($directory) || $this->directoryMissingRemotely($directory)) {
             throw new FileDirectoryNotFoundException();
         }
 
@@ -308,5 +308,25 @@ class Updater
 
             return [$key => $value];
         })->toArray();
+    }
+
+    /**
+     * @param  \Illuminate\Config\Repository  $directory
+     *
+     * @return bool
+     */
+    protected function directoryMissingLocally($directory)
+    {
+        return !$this->remote && !file_exists($directory);
+    }
+
+    /**
+     * @param  \Illuminate\Config\Repository  $directory
+     *
+     * @return bool
+     */
+    protected function directoryMissingRemotely($directory)
+    {
+        return $this->remote && !Storage::disk($this->disk)->exists($directory);
     }
 }

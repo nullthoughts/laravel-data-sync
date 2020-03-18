@@ -79,20 +79,20 @@ class UpdaterRemoteTest extends TestCase
         $this->assertTrue($supervisor->is(Roles::first()->supervisor));
     }
 
-//    /**
-//     * @test
-//     * @group current
-//     */
-//    public function exception_is_thrown_if_the_directory_does_not_exists()
-//    {
-//        try {
-//            new UpdaterFake(null, null, true, 's3');
-//
-//            $this->fail('exception was thrown');
-//        } catch (Exception $e) {
-//            $this->assertEquals('Specified sync file directory does not exist', $e->getMessage());
-//        }
-//    }
+    /**
+     * @test
+     * @group current
+     */
+    public function exception_is_thrown_if_the_directory_does_not_exists()
+    {
+        try {
+            new UpdaterFake(null, null, true, 's3');
+
+            $this->fail('exception was thrown');
+        } catch (Exception $e) {
+            $this->assertEquals('Specified sync file directory does not exist', $e->getMessage());
+        }
+    }
 
     /** @test */
     public function invalid_json_throws_an_exception()
