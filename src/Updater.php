@@ -35,6 +35,11 @@ class Updater
     private $disk;
 
     /**
+     * @var string
+     */
+    private $baseNamespace = '\\App\\';
+
+    /**
      * Get files in sync directory.
      *
      * @param  string|null  $path
@@ -52,6 +57,16 @@ class Updater
 
         $this->directory = $this->getDirectory($path);
         $this->files = $this->getFiles($this->directory, $model);
+    }
+
+    /**
+     * Override the default namespace for the class.
+     *
+     * @param $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        $this->baseNamespace = $namespace;
     }
 
     /**
@@ -232,7 +247,7 @@ class Updater
      */
     protected function getModel(string $name)
     {
-        return '\\App\\'.Str::studly(pathinfo($name, PATHINFO_FILENAME));
+        return $this->baseNamespace.Str::studly(pathinfo($name, PATHINFO_FILENAME));
     }
 
     /**
