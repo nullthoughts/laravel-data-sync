@@ -10,7 +10,6 @@ use nullthoughts\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 use nullthoughts\LaravelDataSync\Exceptions\FileDirectoryNotFoundException;
 use nullthoughts\LaravelDataSync\Exceptions\NoCriteriaException;
 use nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException;
-use stdClass;
 
 class Updater
 {
@@ -37,7 +36,7 @@ class Updater
     /**
      * @var string
      */
-    private $baseNamespace = '\\App\\';
+    private $modelNamespace;
 
     /**
      * Get files in sync directory.
@@ -54,6 +53,7 @@ class Updater
     {
         $this->remote = $remote;
         $this->disk = $disk;
+        $this->modelNamespace = config('data-sync.namespace', '\\App\\Models\\');
 
         $this->directory = $this->getDirectory($path);
         $this->files = $this->getFiles($this->directory, $model);
@@ -66,7 +66,7 @@ class Updater
      */
     public function setNamespace($namespace)
     {
-        $this->baseNamespace = $namespace;
+        $this->modelNamespace = $namespace;
     }
 
     /**
@@ -195,13 +195,13 @@ class Updater
     /**
      * Filter record criteria.
      *
-     * @param stdClass $record
+     * @param object $record
      *
      * @throws \nullthoughts\LaravelDataSync\Exceptions\NoCriteriaException
      *
      * @return \Illuminate\Support\Collection
      */
-    protected function getCriteria(stdClass $record)
+    protected function getCriteria(object $record)
     {
         $criteria = collect($record)->filter(function ($value, $key) {
             return $this->isCriteria($key);
@@ -219,11 +219,11 @@ class Updater
     /**
      * Filter record values.
      *
-     * @param stdClass $record
+     * @param object $record
      *
      * @return \Illuminate\Support\Collection
      */
-    protected function getValues(stdClass $record)
+    protected function getValues(object $record)
     {
         return collect($record)->reject(function ($value, $key) {
             if ($this->isCriteria($key)) {
@@ -247,7 +247,7 @@ class Updater
      */
     protected function getModel(string $name)
     {
-        return $this->baseNamespace.Str::studly(pathinfo($name, PATHINFO_FILENAME));
+        return $this->modelNamespace . Str::studly(pathinfo($name, PATHINFO_FILENAME));
     }
 
     /**
@@ -288,11 +288,11 @@ class Updater
      * Return ID for nested key-value pairs.
      *
      * @param string $key
-     * @param stdClass $values
+     * @param object $values
      *
      * @return array
      */
-    protected function resolveId(string $key, stdClass $values)
+    protected function resolveId(string $key, object $values)
     {
         $model = $this->getModel($key);
 
