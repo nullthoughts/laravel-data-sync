@@ -28,12 +28,11 @@ which generates
         "properties->title": "Best Friend",
         "phone_numbers->mobile": "555-555-5556",
         "_email": "noreply@buellerandco.com",
-        // ...
     }
 ]
 ```
 
-- Further work is required to support remote disks
+- Further work is required to support remote disks. For testing & development of new V3.1 features, use `composer require nullthoughts/laravel-data-sync:v3.1.x-dev`
 
 ---
 
