@@ -8,6 +8,35 @@
 
 Laravel utility to keep records synchronized between environments through source control
 
+## V3.1 branch Notes (Work in progress)
+- Adds support for Laravel 8+ models directory in `config/data-sync.php`:
+```
+'namespace' => '\\App\\Models\\',
+```
+
+- Adds ability to export existing Models to data sync files:
+```
+php artisan data:export User --criteria=name --criteria=email --except=id
+```
+
+which generates
+
+```json
+[
+    {
+        "_name": "Cameron Frye",
+        "properties->title": "Best Friend",
+        "phone_numbers->mobile": "555-555-5556",
+        "_email": "noreply@buellerandco.com",
+        // ...
+    }
+]
+```
+
+- Further work is required to support remote disks
+
+---
+
 ## Installation 
 You can install this package via composer:
 ```bash
