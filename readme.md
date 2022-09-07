@@ -8,7 +8,7 @@
 
 Laravel utility to keep records synchronized between environments through source control
 
-## V3.1 branch Notes (Work in progress)
+## [V3.1 branch](https://github.com/nullthoughts/laravel-data-sync/tree/v3.1) Notes (Work in progress)
 - Adds support for Laravel 8+ models directory in `config/data-sync.php`:
 ```
 'namespace' => '\\App\\Models\\',
