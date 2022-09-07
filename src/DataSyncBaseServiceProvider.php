@@ -17,6 +17,7 @@ class DataSyncBaseServiceProvider extends ServiceProvider
     {
         $this->commands([
             Console\Commands\Sync::class,
+            Console\Commands\Export::class,
         ]);
     }
 
