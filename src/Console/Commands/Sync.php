@@ -2,8 +2,8 @@
 
 namespace nullthoughts\LaravelDataSync\Console\Commands;
 
-use nullthoughts\LaravelDataSync\Updater;
 use Illuminate\Console\Command;
+use nullthoughts\LaravelDataSync\Updater;
 
 class Sync extends Command
 {
@@ -11,7 +11,8 @@ class Sync extends Command
 
     protected $description = 'Update Models with respective sync data files';
 
-    public function handle()
+    /** @psalm-api */
+    public function handle(): void
     {
         $path = $this->option('path');
         $model = $this->option('model');

@@ -8,21 +8,35 @@
             "email": "jani@nullincorporated.com"
         }
     ],
+    "scripts": {
+        "lint": "pint --test",
+        "lint:fix": "pint --repair",
+        "psalm": "psalm",
+        "psalm:fix": "psalm --alter --issues=MissingReturnType,MissingParamType",
+        "test": "phpunit --coverage-text",
+        "test:ci": "phpunit --teamcity"
+    },
     "require": {
         "ext-json": "*",
         "php": "^8.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^7.0"
+        "orchestra/testbench": "^7.0",
+        "rector/rector": "^1.2",
+        "ergebnis/composer-normalize": "^2.44",
+        "vimeo/psalm": "^5.26",
+        "psalm/plugin-laravel": "^2.9",
+        "laravel/pint": "^1.18"
     },
     "autoload": {
-        "psr-4" : {
+        "psr-4": {
             "nullthoughts\\LaravelDataSync\\": "src/"
         }
     },
     "autoload-dev": {
-        "psr-4" : {
-            "nullthoughts\\LaravelDataSync\\Tests\\": "tests/"
+        "psr-4": {
+            "nullthoughts\\LaravelDataSync\\Tests\\": "tests/",
+            "nullthoughts\\LaravelDataSync\\Tests\\Fakes\\": "tests/fakes/"
         }
     },
     "extra": {
@@ -30,6 +44,11 @@
             "providers": [
                 "nullthoughts\\LaravelDataSync\\DataSyncBaseServiceProvider"
             ]
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true
         }
     }
 }

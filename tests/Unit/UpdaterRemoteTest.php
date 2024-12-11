@@ -1,12 +1,15 @@
 <?php
 
-namespace nullthoughts\LaravelDataSync\Tests;
+namespace nullthoughts\LaravelDataSync\Tests\Unit;
 
+use Exception;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use nullthoughts\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
-use nullthoughts\LaravelDataSync\Tests\fakes\UpdaterFake;
-use Exception;
+use nullthoughts\LaravelDataSync\Tests\Fakes\UpdaterFake;
+use nullthoughts\LaravelDataSync\Tests\Roles;
+use nullthoughts\LaravelDataSync\Tests\Supervisor;
+use nullthoughts\LaravelDataSync\Tests\TestCase;
 
 class UpdaterRemoteTest extends TestCase
 {
@@ -81,9 +84,10 @@ class UpdaterRemoteTest extends TestCase
 
     /**
      * @test
+     *
      * @group current
      */
-    public function exception_is_thrown_if_the_directory_does_not_exists()
+    public function exception_is_thrown_if_the_directory_does_not_exists(): void
     {
         try {
             new UpdaterFake(null, null, true, 's3');
@@ -95,7 +99,7 @@ class UpdaterRemoteTest extends TestCase
     }
 
     /** @test */
-    public function invalid_json_throws_an_exception_in_remote()
+    public function invalid_json_throws_an_exception_in_remote(): void
     {
         try {
             $updater = new UpdaterFake('test-data/invalid-json', null, true, 's3');
@@ -108,7 +112,7 @@ class UpdaterRemoteTest extends TestCase
     }
 
     /** @test */
-    public function the_json_must_contain_a_key_with_an_underscore_in_remote()
+    public function the_json_must_contain_a_key_with_an_underscore_in_remote(): void
     {
         try {
             $updater = new UpdaterFake('test-data/no-criteria', null, true, 's3');
@@ -121,7 +125,7 @@ class UpdaterRemoteTest extends TestCase
     }
 
     /** @test */
-    public function order_of_imports_can_be_defined_in_config_in_remote()
+    public function order_of_imports_can_be_defined_in_config_in_remote(): void
     {
         config()->set('data-sync.order', [
             'Supervisor',
@@ -136,7 +140,7 @@ class UpdaterRemoteTest extends TestCase
     }
 
     /** @test */
-    public function exception_is_thrown_if_imports_are_in_incorrect_order_in_remote()
+    public function exception_is_thrown_if_imports_are_in_incorrect_order_in_remote(): void
     {
         config()->set('data-sync.order', [
             'Roles',
@@ -150,7 +154,7 @@ class UpdaterRemoteTest extends TestCase
     }
 
     /** @test */
-    public function it_ignores_non_json_files_in_remote()
+    public function it_ignores_non_json_files_in_remote(): void
     {
         $updater = new UpdaterFake('test-data/not-json', null, true, 's3');
         $updater->run();

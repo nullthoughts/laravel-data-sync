@@ -14,37 +14,21 @@ use stdClass;
 
 class Updater
 {
-    /**
-     * @var string
-     */
-    private $directory;
+    private string $directory;
 
-    /**
-     * @var \Illuminate\Support\Collection
-     */
-    private $files;
+    private Collection $files;
 
-    /**
-     * @var bool
-     */
-    private $remote;
+    private bool $remote;
 
-    /**
-     * @var string
-     */
-    private $disk;
+    private string $disk;
 
-    /**
-     * @var string
-     */
-    private $baseNamespace = '\\App\\';
+    private string $baseNamespace = '\\App\\';
 
     /**
      * Get files in sync directory.
      *
      * @param  string|null  $path
      * @param  string|null  $model
-     *
      * @param  bool  $remote
      * @param  string  $disk
      *
@@ -62,17 +46,25 @@ class Updater
     /**
      * Override the default namespace for the class.
      *
-     * @param $namespace
+     * @psalm-api
      */
-    public function setNamespace($namespace)
+    public function setNamespace(string $namespace): void
     {
         $this->baseNamespace = $namespace;
     }
 
     /**
-     * Execute syncModel for each file.
+     * Override the default directory for the class.
      *
-     * @return mixed
+     * @psalm-api
+     */
+    public function setDirectory(string $directory): void
+    {
+        $this->directory = $directory;
+    }
+
+    /**
+     * Execute syncModel for each file.
      */
     public function run()
     {
@@ -81,7 +73,7 @@ class Updater
         return $files->map(function ($file) {
             try {
                 return $this->syncModel($file);
-            } catch (\ErrorException $e) {
+            } catch (\ErrorException) {
                 $model = pathinfo($file, PATHINFO_FILENAME);
 
                 throw new ErrorUpdatingModelException(ucwords($model));
@@ -92,9 +84,9 @@ class Updater
     /**
      * Parse each record for criteria/values and update/create model.
      *
-     * @param  string  $file
      *
      * @return \Illuminate\Support\Collection
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      * @throws \nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
      */
@@ -121,29 +113,28 @@ class Updater
     /**
      * Get directory path for sync files.
      *
-     * @param $path
-     *
-     * @throws \nullthoughts\LaravelDataSync\Exceptions\FileDirectoryNotFoundException
      *
      * @return string
+     *
+     * @throws \nullthoughts\LaravelDataSync\Exceptions\FileDirectoryNotFoundException
      */
-    protected function getDirectory($path)
+    protected function getDirectory(?string $path)
     {
         $directory = $path ?? config('data-sync.path', base_path('sync'));
 
         if ($this->directoryMissingLocally($directory) || $this->directoryMissingRemotely($directory)) {
-            throw new FileDirectoryNotFoundException();
+            throw new FileDirectoryNotFoundException;
         }
 
-        return $directory;
+        $this->directory = $directory;
+
+        return $this->directory;
     }
 
     /**
      * Get list of files in directory.
      *
-     * @param string      $directory
-     * @param string|null $model
-     *
+     * @param  string|null  $model
      * @return \Illuminate\Support\Collection
      */
     protected function getFiles(string $directory, $model = null)
@@ -170,7 +161,6 @@ class Updater
     /**
      * Sort Models by pre-configured order.
      *
-     * @param \Illuminate\Support\Collection $files
      *
      * @return \Illuminate\Support\Collection
      */
@@ -195,11 +185,10 @@ class Updater
     /**
      * Filter record criteria.
      *
-     * @param stdClass $record
-     *
-     * @throws \nullthoughts\LaravelDataSync\Exceptions\NoCriteriaException
      *
      * @return \Illuminate\Support\Collection
+     *
+     * @throws \nullthoughts\LaravelDataSync\Exceptions\NoCriteriaException
      */
     protected function getCriteria(stdClass $record)
     {
@@ -208,7 +197,7 @@ class Updater
         });
 
         if ($criteria->count() == 0) {
-            throw new NoCriteriaException();
+            throw new NoCriteriaException;
         }
 
         return $criteria->mapWithKeys(function ($value, $key) {
@@ -219,7 +208,6 @@ class Updater
     /**
      * Filter record values.
      *
-     * @param stdClass $record
      *
      * @return \Illuminate\Support\Collection
      */
@@ -241,7 +229,6 @@ class Updater
     /**
      * Returns model name for file.
      *
-     * @param string $name
      *
      * @return string
      */
@@ -253,9 +240,9 @@ class Updater
     /**
      * Parses JSON from file and returns collection.
      *
-     * @param  string  $file
      *
      * @return \Illuminate\Support\Collection
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      * @throws \nullthoughts\LaravelDataSync\Exceptions\NoRecordsInvalidJSONException
      */
@@ -275,8 +262,7 @@ class Updater
     /**
      * Check if column is criteria for a condition match.
      *
-     * @param string $key
-     *
+     * @param  string  $key
      * @return bool
      */
     protected function isCriteria($key)
@@ -287,8 +273,6 @@ class Updater
     /**
      * Return ID for nested key-value pairs.
      *
-     * @param string $key
-     * @param stdClass $values
      *
      * @return array
      */
@@ -310,7 +294,6 @@ class Updater
     /**
      * Detect nested objects and resolve them.
      *
-     * @param \Illuminate\Support\Collection $record
      *
      * @return array
      */
@@ -327,21 +310,19 @@ class Updater
 
     /**
      * @param  \Illuminate\Config\Repository  $directory
-     *
      * @return bool
      */
     protected function directoryMissingLocally($directory)
     {
-        return !$this->remote && !file_exists($directory);
+        return ! $this->remote && ! file_exists($directory);
     }
 
     /**
      * @param  \Illuminate\Config\Repository  $directory
-     *
      * @return bool
      */
     protected function directoryMissingRemotely($directory)
     {
-        return $this->remote && !Storage::disk($this->disk)->exists($directory);
+        return $this->remote && ! Storage::disk($this->disk)->exists($directory);
     }
 }

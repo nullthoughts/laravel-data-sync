@@ -3,6 +3,7 @@
 namespace nullthoughts\LaravelDataSync\Tests;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supervisor extends Model
 {
@@ -10,7 +11,7 @@ class Supervisor extends Model
 
     protected $guarded = [];
 
-    public function roles()
+    public function roles(): HasMany
     {
         return $this->hasMany(Roles::class);
     }

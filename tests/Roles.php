@@ -3,6 +3,7 @@
 namespace nullthoughts\LaravelDataSync\Tests;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Roles extends Model
 {
@@ -10,7 +11,7 @@ class Roles extends Model
 
     protected $guarded = [];
 
-    public function supervisor()
+    public function supervisor(): BelongsTo
     {
         return $this->belongsTo(Supervisor::class);
     }
