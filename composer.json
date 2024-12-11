@@ -21,7 +21,7 @@
         "php": "^8.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^7",
+        "orchestra/testbench": "^7|^8",
         "rector/rector": "^1",
         "ergebnis/composer-normalize": "^2",
         "vimeo/psalm": "^5",
