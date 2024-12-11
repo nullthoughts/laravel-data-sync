@@ -21,12 +21,12 @@
         "php": "^8.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^7.0",
-        "rector/rector": "^1.2",
-        "ergebnis/composer-normalize": "^2.44",
-        "vimeo/psalm": "^5.26",
-        "psalm/plugin-laravel": "^2.9",
-        "laravel/pint": "^1.18"
+        "orchestra/testbench": "^7",
+        "rector/rector": "^1",
+        "ergebnis/composer-normalize": "^2",
+        "vimeo/psalm": "^5",
+        "psalm/plugin-laravel": "^2",
+        "laravel/pint": "^1"
     },
     "autoload": {
         "psr-4": {
