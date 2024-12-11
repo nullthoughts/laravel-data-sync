@@ -16,18 +16,14 @@ jobs:
       contents: write
       statuses: write
 
-    outputs:
-      lock: ${{ steps.hash.outputs.lock }}
-      cache: ${{ steps.composer-cache.outputs.cache }}
-
     strategy:
       fail-fast: true
       matrix:
-        php-versions: [ '8.0', '8.1', '8.2', '8.3' ]
+        php: [ '8.0', '8.1', '8.2', '8.3' ]
         stability: [ 'stable', 'lowest' ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -40,7 +36,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get composer cache directory
-        id: composer-cache
+        id: composer-cache-dir
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Get composer.lock or composer.json hash for caching
@@ -57,10 +53,10 @@ jobs:
         id: composer-cache
         uses: actions/cache@v4
         with:
-          path: ${{ outputs.cache }}
-          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ outputs.lock }}
+          path: ${{ steps.composer-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ steps.hash.outputs.lock }}
           restore-keys: |
-            ${{ runner.os }}-php-${{ matrix.php }}-${{ outputs.lock }}
+            ${{ runner.os }}-php-${{ matrix.php }}-${{ steps.hash.outputs.lock }}
             ${{ runner.os }}-php-${{ matrix.php }}-
             ${{ runner.os }}-php-
 
