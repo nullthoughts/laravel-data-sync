@@ -1,17 +1,20 @@
 <?php
 
-namespace nullthoughts\LaravelDataSync\Tests;
+namespace nullthoughts\LaravelDataSync\Tests\Unit;
 
+use Exception;
 use nullthoughts\LaravelDataSync\Exceptions\ErrorUpdatingModelException;
 use nullthoughts\LaravelDataSync\Tests\fakes\UpdaterFake;
-use Exception;
+use nullthoughts\LaravelDataSync\Tests\Roles;
+use nullthoughts\LaravelDataSync\Tests\Supervisor;
+use nullthoughts\LaravelDataSync\Tests\TestCase;
 
 class UpdaterTest extends TestCase
 {
     /** @test */
-    public function it_adds_roles_to_the_database()
+    public function it_adds_roles_to_the_database(): void
     {
-        $updater = new UpdaterFake(__DIR__.'/../test-data', 'roles');
+        $updater = new UpdaterFake($this->testDataPath, 'roles');
 
         $updater->run();
 
@@ -23,9 +26,9 @@ class UpdaterTest extends TestCase
     /** @test */
     public function it_can_default_to_configuration()
     {
-        config()->set('data-sync.path', __DIR__.'/../test-data');
+        config()->set('data-sync.path', $this->testDataPath);
 
-        $updater = new UpdaterFake();
+        $updater = new UpdaterFake;
 
         $updater->run();
 
@@ -37,11 +40,11 @@ class UpdaterTest extends TestCase
     /** @test */
     public function it_can_update_an_existing_record()
     {
-        config()->set('data-sync.path', __DIR__.'/../test-data');
-        (new UpdaterFake())->run();
+        config()->set('data-sync.path', $this->testDataPath);
+        (new UpdaterFake)->run();
 
-        config()->set('data-sync.path', __DIR__.'/../test-data/valid');
-        (new UpdaterFake())->run();
+        config()->set('data-sync.path', $this->testDataPath.'/valid');
+        (new UpdaterFake)->run();
 
         $this->assertDatabaseHas('roles', ['category' => 'changed']);
         $this->assertDatabaseHas('roles', ['category' => 'changed']);
@@ -49,24 +52,24 @@ class UpdaterTest extends TestCase
     }
 
     /** @test */
-    public function it_can_update_the_relationship()
+    public function it_can_update_the_relationship(): void
     {
         $supervisor = Supervisor::create([
             'name' => 'CEO',
         ]);
 
-        config()->set('data-sync.path', __DIR__.'/../test-data/relationship', 'roles');
-        (new UpdaterFake())->run();
+        config()->set('data-sync.path', $this->testDataPath.'/relationship', 'roles');
+        (new UpdaterFake)->run();
 
         $this->assertEquals($supervisor->id, Roles::first()->supervisor_id);
         $this->assertTrue($supervisor->is(Roles::first()->supervisor));
     }
 
     /** @test */
-    public function exception_is_thrown_if_the_directory_does_not_exists()
+    public function exception_is_thrown_if_the_directory_does_not_exists(): void
     {
         try {
-            new UpdaterFake();
+            new UpdaterFake;
 
             $this->fail('exception was thrown');
         } catch (Exception $e) {
@@ -75,10 +78,10 @@ class UpdaterTest extends TestCase
     }
 
     /** @test */
-    public function invalid_json_throws_an_exception()
+    public function invalid_json_throws_an_exception(): void
     {
         try {
-            $updater = new UpdaterFake(__DIR__.'/../test-data/invalid-json');
+            $updater = new UpdaterFake($this->testDataPath.'/invalid-json');
             $updater->run();
 
             $this->fail('exception was thrown');
@@ -88,10 +91,10 @@ class UpdaterTest extends TestCase
     }
 
     /** @test */
-    public function the_json_must_contain_a_key_with_an_underscore()
+    public function the_json_must_contain_a_key_with_an_underscore(): void
     {
         try {
-            $updater = new UpdaterFake(__DIR__.'/../test-data/no-criteria');
+            $updater = new UpdaterFake($this->testDataPath.'/no-criteria');
             $updater->run();
 
             $this->fail('exception was thrown');
@@ -101,22 +104,21 @@ class UpdaterTest extends TestCase
     }
 
     /** @test */
-    public function order_of_imports_can_be_defined_in_config()
+    public function order_of_imports_can_be_defined_in_config(): void
     {
         config()->set('data-sync.order', [
             'Supervisor',
             'Roles',
         ]);
 
-        $updater = new UpdaterFake(__DIR__.'/../test-data/ordered');
+        $updater = new UpdaterFake($this->testDataPath.'/ordered');
         $updater->run();
 
         $this->assertDatabaseHas('roles', ['slug' => 'update-student-records']);
         $this->assertDatabaseHas('supervisors', ['name' => 'CEO']);
     }
 
-    /** @test */
-    public function exception_is_thrown_if_imports_are_in_incorrect_order()
+    public function exception_is_thrown_if_imports_are_in_incorrect_order(): void
     {
         config()->set('data-sync.order', [
             'Roles',
@@ -125,14 +127,14 @@ class UpdaterTest extends TestCase
 
         $this->expectException(ErrorUpdatingModelException::class);
 
-        $updater = new UpdaterFake(__DIR__.'/../test-data/ordered');
+        $updater = new UpdaterFake($this->testDataPath.'/ordered');
         $updater->run();
     }
 
     /** @test */
-    public function it_ignores_non_json_files()
+    public function it_ignores_non_json_files(): void
     {
-        $updater = new UpdaterFake(__DIR__.'/../test-data/not-json');
+        $updater = new UpdaterFake($this->testDataPath.'/not-json');
         $updater->run();
 
         $this->assertDatabaseMissing('roles', ['slug' => 'update-student-records']);

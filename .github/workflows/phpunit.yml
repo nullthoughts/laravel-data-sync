@@ -1,20 +1,70 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: PHPUnit
 
-on: [push]
+on: [ push ]
 
 jobs:
   build-test:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+      statuses: write
+
+    outputs:
+      lock: ${{ steps.hash.outputs.lock }}
+      cache: ${{ steps.composer-cache.outputs.cache }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        php-versions: [ '8.0', '8.1', '8.2', '8.3' ]
+        stability: [ 'stable', 'lowest' ]
+
     steps:
       - uses: actions/checkout@v2
 
-      - uses: php-actions/composer@v5
-
-      - name: PHPUnit Tests
-        uses: php-actions/phpunit@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php_extensions: xdebug mbstring
-          bootstrap: vendor/autoload.php
-          configuration: phpunit.xml
-          args: --coverage-text
+          php-version: ${{ matrix.php }}
+          tools: composer
+          extensions: json, dom, curl, libxml, mbstring
+          coverage: xdebug
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Get composer.lock or composer.json hash for caching
+        id: hash
+        shell: bash
+        run: |
+          if [ -f composer.lock ]; then
+            echo "lock=${{ hashFiles('**/composer.lock') }}" >> $GITHUB_OUTPUT
+          else
+            echo "lock=${{ hashFiles('**/composer.json') }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ outputs.cache }}
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ outputs.lock }}
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php }}-${{ outputs.lock }}
+            ${{ runner.os }}-php-${{ matrix.php }}-
+            ${{ runner.os }}-php-
+
+      - name: Install Dependencies (prefer-${{ matrix.stability }})
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-${{ matrix.stability }}
+
+      - name: Configure matchers
+        uses: mheap/phpunit-matcher-action@v1
+
+      - name: Execute composer test (Unit and Feature tests)
+        run: composer test:ci

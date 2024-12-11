@@ -7,25 +7,30 @@ use Illuminate\Support\Facades\Schema;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
-    protected function getEnvironmentSetUp($app)
+    /** @psalm-suppress PropertyNotSetInConstructor */
+    public string $testDataPath;
+
+    protected function getEnvironmentSetUp($app): void
     {
         $app['config']->set('database.default', 'testdb');
         $app['config']->set('database.connections.testdb', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
         ]);
+
+        $this->testDataPath = __DIR__.'/test-data';
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Schema::create('supervisors', function (Blueprint $table) {
+        Schema::create('supervisors', static function (Blueprint $table): void {
             $table->increments('id');
             $table->string('name');
         });
 
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('roles', static function (Blueprint $table): void {
             $table->increments('id');
             $table->string('slug');
             $table->unsignedInteger('supervisor_id')->nullable();
